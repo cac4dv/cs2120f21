@@ -12,6 +12,7 @@ example : false := _    -- trick question? why?
 
 example : ∀ (P : Prop), P ∨ P ↔ P := 
 begin
+  true.intro _ _,
 end
 
 example : ∀ (P : Prop), P ∧ P ↔ P := 
