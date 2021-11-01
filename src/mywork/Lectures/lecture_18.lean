@@ -95,7 +95,10 @@ is also in s₂, and the same goes for
 2. Those are all the values in s₁, 
 so for any value, if it's in s₁ it's
 also in s₂, so s₁ is a subset of s₂.
--/
+-//-
+The following is fancy notation for:
+"forall items of type 'alpha'... if 'a' has a property of s1, then 'a' also has a property of s2"
+-/ 
 def subset (s₁ s₂ : set α) :=
 ∀ ⦃a : α⦄, a ∈ s₁ → a ∈ s₂
 
@@ -130,7 +133,7 @@ numbers, write an expression for the
 subset of evens that are also prime.
 -/
 axioms (evens primes : ℕ → Prop)
-def even_primes : set ℕ := _
+def even_primes : set ℕ := { }
 
 /- 
 Exercises: 
@@ -209,8 +212,7 @@ value, making every value of a given type a
 member of the set.
 -/
 
-def univ : set α :=
-λ a, true
+def univ : set α := λ a, true
 
 /-
 We can even start to define functions that
@@ -220,10 +222,13 @@ an insert operation that takes a set and a
 value, both of the same type, and returns
 a new set with the members of the given set
 and the new value as its members.
+-//- 
+returns:
+new set where each value is either 'a'
+OR... it already exists 
 -/
-
 def insert (a : α) (s : set α) : set α :=
-{b | b = a ∨ b ∈ s}
+  {b | b = a ∨ b ∈ s}
 
 -- example
 def primes_and_15 := insert 15 primes
@@ -235,7 +240,6 @@ the singleton set containing a value a as
 a set of values all of which are equal to
 a.
 -/
-
 def singleton (a : α) : (set α) := 
   {b | b = a}
 
@@ -248,9 +252,9 @@ of the individual sets. Thus a value is
 in the resulting set if and only if it's
 in one of the contributing sets. 
 -/
-
+-- symbol \in
 def union (s₁ s₂ : set α) : set α :=
-{a | a ∈ s₁ ∨ a ∈ s₂}
+  {a | a ∈ s₁ ∨ a ∈ s₂}
 
 notation s ∪ t := union s t 
 
@@ -262,7 +266,7 @@ sets.
 -/
 
 def inter (s₁ s₂ : set α) : set α :=
-{a | a ∈ s₁ ∧ a ∈ s₂}
+  {a | a ∈ s₁ ∧ a ∈ s₂}
 
 notation s ∩ t := inter s t
 
@@ -272,9 +276,9 @@ The complement of a set of values of type
 are not in the given set.
 -/
 
+-- symbol: \nin
 def compl (s : set α) : set α :=
-{a | a ∉ s}
-
+  {a | a ∉ s}
 /-
 Given sets, s and t, the difference,
 s \ t, is the set of elements in s that
@@ -283,19 +287,18 @@ are not in t. You can think of this as
 idea of subtraction, where, for example,
 5 - 2 means 5 take away 2.
 -/
-
+-- x can be labelled as anything
 def diff (s t : set α) : set α :=
-{ v | v ∈ s ∧ v ∉ t}
+  { x | x ∈ s ∧ x ∉ t }
 
-/-
-Powerset
--/
-
+-- set of all subsets: powerset
 def powerset (s : set α) : set (set α) :=
-{t | t ⊆ s}
-
+  {t | t ⊆ s}
+/-
+set 't' is a set...
+that all sets are proper subsets of 's'
+-/
 -- Question: What's the type of t, here?
-
 -- notation 𝒫 s := powerset s
 
 /-
@@ -308,9 +311,11 @@ to every value in s.
 -/
 
 def image (f : α → β) (s : set α) : set β :=
-{b | ∃ a, a ∈ s ∧ f a = b}
-
+  {b | ∃ a, a ∈ s ∧ f a = b}
 /-
+returns all a's that exist in 's' set that..
+when you apply f() to a, you get 'b' 
+-//-
 The formal definition sort of goes to a 
 next level of sophistication in the use
 of predicate logic. It says that the image
@@ -319,6 +324,58 @@ is the set of values, b, such that there
 is (exists) some value, a ∈ s, f a = b.
 -/
 
+/- 
+Exercise: what set does the following 
+expresion define? Note that "f" is given
+here as a lambda expression. As explained
+above the term represents a function that
+takes an argument, n, and returns the
+value, n + 1. Lean infers (from the 1)
+that this is a function from ℕ → ℕ.
+-/
+
+#check image (λ n, n + 1) evens
+
+/-
+To wrap up this chapter, we give can now
+see clearly what different expressions in
+set theory really mean.
+-/
+
+#reduce set ℕ 
+
+#reduce 1 ∈ evens
+
+#reduce 1 ∉ evens
+
+#reduce evens ⊆ primes
+
+#reduce empty_set     -- FIX
+
+#reduce evens ∪ primes
+
+#reduce evens ∩ primes
+
+#reduce compl evens
+
+#reduce diff evens primes
+
+#reduce 𝒫 primes       -- Lean's 𝒫
+/-
+Let's decode this last expression:
+λ (t : ℕ → Prop), ∀ ⦃a : ℕ⦄, t a → primes a
+
+It's a function that takes a set of
+ℕ values, t, expressed as a predicate, 
+and that returns a proposition that is 
+true iff t is subset of (the) primes.
+That subset relation, in turn holds, iff
+every value in t (expressed as (t a)) is
+also in the primes. The overall predicate
+is thus true of a set iff it's a subset
+of the primes. That defines the powerset
+of the prime numbers.
+-/
 
 end hidden
  
