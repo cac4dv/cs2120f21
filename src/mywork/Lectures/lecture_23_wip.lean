@@ -47,10 +47,11 @@ def asymmetric := ∀ ⦃x y⦄, x ≺ y → ¬ y ≺ x
 - Name a common asymmetric relation in arithmetic
 -/
 
-example : reflexive r → ¬ asymmetric r := _   -- true?
-example : ¬ reflexive r ↔ irreflexive r := _  -- true?
+example : reflexive r → ¬ asymmetric r := _   -- true? :=
+example : ¬ reflexive r ↔ irreflexive r := _  -- true? :=
 
-
+-- TC: transitive closure; BR: Binary Relation
+-- the TC of BR is the smallest relation r c= rr' such that r is subrelation & r is transitive
 inductive tc {α : Type} (r : α → α → Prop) : α → α → Prop
 | base  : ∀ a b, r a b → tc a b
 | trans : ∀ a b c, tc a b → tc b c → tc a c
@@ -61,7 +62,6 @@ Reflecting
 https://dml.cz/bitstream/handle/10338.dmlcz/142762/ActaCarolinae_048-2007-1_5.pdf,
 provide formal definition of each of the following properties of a binary relation, 
 r, on objects of a type, β. We will call r 
-
 – a quasiordering if r is reflexive and transitive;
 – a strict (or sharp) ordering if r is irreflexive and transitive;
 – a near-ordering if r is anti_symmetic and transitive;
@@ -87,13 +87,10 @@ end relations
 /- 
 Pullback from binary relation along function and properties it preserves,
 straight from Lean 3 Community mathlib. 
-
-def inv_image (f : α → β) : α → α → Prop :=
-λ a₁ a₂, f a₁ ≺ f a₂
-
-lemma inv_image.trans (f : α → β) (h : transitive r) : transitive (inv_image r f) :=
-λ (a₁ a₂ a₃ : α) (h₁ : inv_image r f a₁ a₂) (h₂ : inv_image r f a₂ a₃), h h₁ h₂
-
-lemma inv_image.irreflexive (f : α → β) (h : irreflexive r) : irreflexive (inv_image r f) :=
-λ (a : α) (h₁ : inv_image r f a a), h (f a) h₁
 -/
+def inv_image (f : α → β) : α → α → Prop :=
+  λ a₁ a₂, f a₁ ≺ f a₂
+lemma inv_image.trans (f : α → β) (h : transitive r) : transitive (inv_image r f) :=
+  λ (a₁ a₂ a₃ : α) (h₁ : inv_image r f a₁ a₂) (h₂ : inv_image r f a₂ a₃), h h₁ h₂
+lemma inv_image.irreflexive (f : α → β) (h : irreflexive r) : irreflexive (inv_image r f) :=
+  λ (a : α) (h₁ : inv_image r f a a), h (f a) h₁
